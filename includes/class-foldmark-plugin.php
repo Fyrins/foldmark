@@ -10,10 +10,12 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Prints the graph of the current singular view in the document head.
  */
-class Foldmark_Plugin {
+final class Foldmark_Plugin {
 
 	/**
 	 * Graphs already built during this request, keyed by post ID.
+	 *
+	 * Filters added after a graph is built do not apply to it; see reset().
 	 *
 	 * @var array[]
 	 */
@@ -29,11 +31,23 @@ class Foldmark_Plugin {
 	}
 
 	/**
+	 * Empties the per-request cache.
+	 *
+	 * For code that changes a post or the Foldmark filters during a request,
+	 * and for tests.
+	 *
+	 * @return void
+	 */
+	public static function reset() {
+		self::$graphs = array();
+	}
+
+	/**
 	 * Returns the nodes of the current view.
 	 *
 	 * Only singular views of a post get a graph: archives, feeds, REST responses
 	 * and admin screens never do. Available as soon as the main query has run,
-	 * so before wp_head.
+	 * so before wp_head. Computed once per request and per post.
 	 *
 	 * @return array[]
 	 */

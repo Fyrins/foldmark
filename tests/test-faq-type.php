@@ -1,14 +1,14 @@
 <?php
 /**
- * Tests for the extraction of questions and answers.
+ * Tests for the FAQ type: reading questions and answers out of a block tree.
  *
  * @package Foldmark
  */
 
 /**
- * Foldmark_Faq_Extractor reads FAQ accordions out of a parsed block tree.
+ * Foldmark_Type_Faq, fed by Foldmark_Graph and Foldmark_Block_Walker, reads FAQ accordions.
  */
-class Foldmark_Test_Faq_Extractor extends WP_UnitTestCase {
+class Foldmark_Test_Faq_Type extends WP_UnitTestCase {
 
 	/**
 	 * Extracts pairs from serialized markup, with trimmed answers.
@@ -17,7 +17,9 @@ class Foldmark_Test_Faq_Extractor extends WP_UnitTestCase {
 	 * @return array
 	 */
 	private function pairs( $markup ) {
-		$pairs = Foldmark_Faq_Extractor::extract( parse_blocks( $markup ) );
+		$walker     = new Foldmark_Block_Walker();
+		$accordions = Foldmark_Graph::accordions_by_type( parse_blocks( $markup ), $walker, Foldmark_Graph::types() );
+		$pairs      = ( new Foldmark_Type_Faq() )->pairs( isset( $accordions['faq'] ) ? $accordions['faq'] : array(), $walker );
 		foreach ( $pairs as $i => $pair ) {
 			$pairs[ $i ]['answer'] = trim( $pair['answer'] );
 		}
@@ -160,15 +162,15 @@ class Foldmark_Test_Faq_Extractor extends WP_UnitTestCase {
 
 	public function test_contains_block_ignores_hidden_blocks() {
 		$yoast = '<!-- wp:yoast/faq-block {"questions":[],"metadata":{"blockVisibility":false}} -->' . "\n" . '<div class="schema-faq wp-block-yoast-faq-block"></div>' . "\n" . '<!-- /wp:yoast/faq-block -->';
-		$this->assertFalse( Foldmark_Faq_Extractor::contains_block( parse_blocks( $yoast ), array( 'yoast/faq-block' ) ) );
+		$this->assertFalse( ( new Foldmark_Block_Walker() )->contains( parse_blocks( $yoast ), array( 'yoast/faq-block' ) ) );
 	}
 
 	public function test_contains_block_finds_nested_and_synced_blocks() {
 		$yoast = '<!-- wp:yoast/faq-block {"questions":[]} -->' . "\n" . '<div class="schema-faq wp-block-yoast-faq-block"></div>' . "\n" . '<!-- /wp:yoast/faq-block -->';
 		$names = array( 'yoast/faq-block' );
 
-		$this->assertTrue( Foldmark_Faq_Extractor::contains_block( parse_blocks( Foldmark_Fixtures::group( $yoast ) ), $names ) );
-		$this->assertTrue( Foldmark_Faq_Extractor::contains_block( parse_blocks( Foldmark_Fixtures::synced( $this->pattern( $yoast ) ) ), $names ) );
-		$this->assertFalse( Foldmark_Faq_Extractor::contains_block( parse_blocks( Foldmark_Fixtures::delivery_faq() ), $names ) );
+		$this->assertTrue( ( new Foldmark_Block_Walker() )->contains( parse_blocks( Foldmark_Fixtures::group( $yoast ) ), $names ) );
+		$this->assertTrue( ( new Foldmark_Block_Walker() )->contains( parse_blocks( Foldmark_Fixtures::synced( $this->pattern( $yoast ) ) ), $names ) );
+		$this->assertFalse( ( new Foldmark_Block_Walker() )->contains( parse_blocks( Foldmark_Fixtures::delivery_faq() ), $names ) );
 	}
 }

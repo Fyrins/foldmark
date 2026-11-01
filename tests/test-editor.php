@@ -12,7 +12,7 @@ class Foldmark_Test_Editor extends WP_UnitTestCase {
 
 	public function test_accordion_declares_object_attribute() {
 		$type = WP_Block_Type_Registry::get_instance()->get_registered( 'core/accordion' );
-		$this->assertSame( array( 'type' => 'object' ), $type->attributes['foldmark'] );
+		$this->assertSame( array( 'type' => array( 'object', 'null' ) ), $type->attributes['foldmark'] );
 	}
 
 	public function test_faq_variation_is_preconfigured() {

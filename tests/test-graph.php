@@ -107,6 +107,134 @@ class Foldmark_Test_Graph extends WP_UnitTestCase {
 		$this->assertSame( array(), Foldmark_Graph::for_post( $this->post( Foldmark_Fixtures::delivery_faq() . $other ) ) );
 	}
 
+	public function test_seo_plugin_faq_blocks_disable_output() {
+		foreach ( array( 'wpseopress/faq-block', 'wpseopress/faq-block-v2', 'aioseo/faq', 'rank-math/faq-block' ) as $name ) {
+			$p = $this->post( Foldmark_Fixtures::delivery_faq() . '<!-- wp:' . $name . ' /-->' );
+			$this->assertSame( array(), Foldmark_Graph::for_post( $p ), $name );
+		}
+	}
+
+	public function test_conflicting_blocks_filter_receives_post_and_type() {
+		$p        = $this->post( Foldmark_Fixtures::delivery_faq() );
+		$received = array();
+		add_filter(
+			'foldmark_conflicting_blocks',
+			static function ( $names, $post, $type ) use ( &$received ) {
+				$received = array( $post->ID, $type );
+				return $names;
+			},
+			10,
+			3
+		);
+
+		Foldmark_Graph::for_post( $p );
+		$this->assertSame( array( $p->ID, 'faq' ), $received );
+	}
+
+	public function test_post_without_accordion_is_not_parsed() {
+		$p      = $this->post( Foldmark_Fixtures::paragraph( 'Pas de FAQ ici.' ) );
+		$parses = 0;
+		$runs   = 0;
+		add_filter(
+			'block_parser_class',
+			static function ( $class_name ) use ( &$parses ) {
+				++$parses;
+				return $class_name;
+			}
+		);
+		add_filter(
+			'foldmark_graph',
+			static function ( $nodes ) use ( &$runs ) {
+				++$runs;
+				return $nodes;
+			}
+		);
+
+		$this->assertSame( array(), Foldmark_Graph::for_post( $p ) );
+		$this->assertSame( 0, $parses );
+		$this->assertSame( 1, $runs );
+	}
+
+	public function test_faq_only_reachable_through_a_synced_pattern_is_found() {
+		$id    = self::factory()->post->create(
+			array(
+				'post_type'    => 'wp_block',
+				'post_status'  => 'publish',
+				'post_content' => Foldmark_Fixtures::delivery_faq(),
+			)
+		);
+		$nodes = Foldmark_Graph::for_post( $this->post( Foldmark_Fixtures::synced( $id ) ) );
+		$this->assertSame( 'Quel délai de livraison ?', $nodes[0]['mainEntity'][0]['name'] );
+	}
+
+	public function test_custom_type_can_be_registered() {
+		add_filter(
+			'foldmark_types',
+			static function ( $types ) {
+				$types['acme']   = new class() implements Foldmark_Type {
+					/**
+					 * Builds one node per accordion.
+					 *
+					 * @param array[]               $accordions Accordions of this type.
+					 * @param Foldmark_Block_Walker $walker     Walker.
+					 * @param WP_Post               $post       Post.
+					 * @return array[]
+					 */
+					public function build( array $accordions, Foldmark_Block_Walker $walker, WP_Post $post ): array {
+						return array(
+							array(
+								'@type' => 'Thing',
+								'name'  => (string) count( $accordions ),
+							),
+						);
+					}
+
+					/**
+					 * No conflicts.
+					 *
+					 * @param WP_Post $post Post.
+					 * @return string[]
+					 */
+					public function conflicting_blocks( WP_Post $post ): array {
+						return array();
+					}
+				};
+				$types['broken'] = 'not a type';
+				return $types;
+			}
+		);
+
+		$item  = Foldmark_Fixtures::item( 'Q', Foldmark_Fixtures::paragraph( 'A' ) );
+		$nodes = Foldmark_Graph::for_post(
+			$this->post(
+				Foldmark_Fixtures::delivery_faq()
+				. Foldmark_Fixtures::accordion( $item, '{"foldmark":{"type":"acme"}}' )
+				. Foldmark_Fixtures::accordion( $item, '{"foldmark":{"type":"broken"}}' )
+			)
+		);
+
+		$this->assertSame( array( 'FAQPage', 'Thing' ), wp_list_pluck( $nodes, '@type' ) );
+		$this->assertSame( '1', $nodes[1]['name'] );
+		$this->assertArrayNotHasKey( 'broken', Foldmark_Graph::types() );
+	}
+
+	public function test_question_key_survives_invalid_utf8() {
+		$first  = Foldmark_Type_Faq::question_key( "Un \xff  deux" );
+		$second = Foldmark_Type_Faq::question_key( "Trois \xff quatre" );
+
+		$this->assertNotSame( '', $first );
+		$this->assertNotSame( $first, $second );
+		$this->assertSame( Foldmark_Type_Faq::question_key( '  Livraison   ?' ), Foldmark_Type_Faq::question_key( 'livraison ?' ) );
+	}
+
+	public function test_question_name_is_plain_text() {
+		$p     = $this->post( Foldmark_Fixtures::accordion( Foldmark_Fixtures::item( '&lt;b&gt;Prix&lt;/b&gt; ?', Foldmark_Fixtures::paragraph( 'A' ) ) ) );
+		$nodes = Foldmark_Graph::for_post( $p );
+
+		// The name is the text the reader sees, never markup: consumers must escape it.
+		$this->assertSame( '<b>Prix</b> ?', $nodes[0]['mainEntity'][0]['name'] );
+	}
+
 	public function test_password_protected_post_produces_nothing() {
 		$p = $this->post( Foldmark_Fixtures::delivery_faq(), array( 'post_password' => 'secret' ) );
 		$this->assertSame( array(), Foldmark_Graph::for_post( $p ) );

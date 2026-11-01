@@ -87,6 +87,23 @@ class Foldmark_Test_Output extends WP_UnitTestCase {
 		$this->assertSame( 1, $runs );
 	}
 
+	public function test_reset_clears_the_request_cache() {
+		$post = $this->visit( Foldmark_Fixtures::delivery_faq() );
+		$this->assertCount( 1, foldmark_get_graph() );
+
+		wp_update_post(
+			array(
+				'ID'           => $post->ID,
+				'post_content' => Foldmark_Fixtures::paragraph( 'Plus de FAQ.' ),
+			)
+		);
+		$this->go_to( get_permalink( $post ) );
+		$this->assertCount( 1, foldmark_get_graph(), 'The graph is cached for the request.' );
+
+		Foldmark_Plugin::reset();
+		$this->assertSame( array(), foldmark_get_graph() );
+	}
+
 	public function test_output_can_be_disabled() {
 		add_filter( 'foldmark_output_enabled', '__return_false' );
 		$this->visit( Foldmark_Fixtures::delivery_faq() );

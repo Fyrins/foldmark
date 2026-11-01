@@ -15,22 +15,7 @@ defined( 'ABSPATH' ) || exit;
  * The attribute has no source: it lives in the block comment, which block
  * validation ignores, so the saved markup never changes.
  */
-class Foldmark_Editor {
-
-	/**
-	 * Name of the block attribute.
-	 */
-	const ATTRIBUTE = 'foldmark';
-
-	/**
-	 * Value of the attribute "type" key for an FAQ.
-	 */
-	const TYPE_FAQ = 'faq';
-
-	/**
-	 * The block this plugin extends.
-	 */
-	const BLOCK = 'core/accordion';
+final class Foldmark_Editor {
 
 	/**
 	 * Hooks the filters. Must run before core blocks are registered on init.
@@ -50,7 +35,7 @@ class Foldmark_Editor {
 	 * @return array
 	 */
 	public static function add_attribute( $args, $name ) {
-		if ( self::BLOCK !== $name || ! is_array( $args ) ) {
+		if ( Foldmark_Schema::BLOCK !== $name || ! is_array( $args ) ) {
 			return $args;
 		}
 
@@ -58,7 +43,8 @@ class Foldmark_Editor {
 			$args['attributes'] = array();
 		}
 
-		$args['attributes'][ self::ATTRIBUTE ] = array( 'type' => 'object' );
+		// Null is the value the Accordion variation writes to turn an FAQ back into a plain accordion.
+		$args['attributes'][ Foldmark_Schema::ATTRIBUTE ] = array( 'type' => array( 'object', 'null' ) );
 
 		return $args;
 	}
@@ -71,7 +57,7 @@ class Foldmark_Editor {
 	 * @return array
 	 */
 	public static function add_variations( $variations, $block_type ) {
-		if ( ! $block_type instanceof WP_Block_Type || self::BLOCK !== $block_type->name || ! is_array( $variations ) ) {
+		if ( ! $block_type instanceof WP_Block_Type || Foldmark_Schema::BLOCK !== $block_type->name || ! is_array( $variations ) ) {
 			return $variations;
 		}
 
@@ -91,8 +77,8 @@ class Foldmark_Editor {
 			'icon'        => 'editor-help',
 			'keywords'    => array( 'faq', 'questions', 'schema' ),
 			'scope'       => array( 'inserter', 'transform' ),
-			'attributes'  => array( self::ATTRIBUTE => array( 'type' => self::TYPE_FAQ ) ),
-			'isActive'    => array( self::ATTRIBUTE . '.type' ),
+			'attributes'  => array( Foldmark_Schema::ATTRIBUTE => array( 'type' => Foldmark_Schema::TYPE_FAQ ) ),
+			'isActive'    => array( Foldmark_Schema::ATTRIBUTE . '.type' ),
 			'innerBlocks' => array( $item, $item, $item ),
 		);
 
@@ -100,8 +86,8 @@ class Foldmark_Editor {
 			'name'       => 'foldmark/accordion',
 			'title'      => __( 'Accordion', 'foldmark' ),
 			'scope'      => array( 'transform' ),
-			'attributes' => array( self::ATTRIBUTE => null ),
-			'isActive'   => array( self::ATTRIBUTE ),
+			'attributes' => array( Foldmark_Schema::ATTRIBUTE => null ),
+			'isActive'   => array( Foldmark_Schema::ATTRIBUTE ),
 		);
 
 		return $variations;
