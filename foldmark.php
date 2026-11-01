@@ -37,5 +37,19 @@ define( 'FOLDMARK_FILE', __FILE__ );
 require_once __DIR__ . '/includes/class-foldmark-editor.php';
 require_once __DIR__ . '/includes/class-foldmark-faq-extractor.php';
 require_once __DIR__ . '/includes/class-foldmark-graph.php';
+require_once __DIR__ . '/includes/class-foldmark-plugin.php';
 
 Foldmark_Editor::init();
+Foldmark_Plugin::init();
+
+/**
+ * Returns the schema.org nodes Foldmark prints for the current view.
+ *
+ * Available once the main query has run, so before wp_head. Combine with the
+ * foldmark_output_enabled filter to move the nodes into another plugin's graph.
+ *
+ * @return array[] Nodes, or an empty array.
+ */
+function foldmark_get_graph() {
+	return Foldmark_Plugin::get_graph();
+}
