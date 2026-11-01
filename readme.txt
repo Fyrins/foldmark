@@ -82,8 +82,8 @@ No. There is no outbound request of any kind.
 == Screenshots ==
 
 1. The FAQ block in the block inserter.
-2. An FAQ filled in the editor.
-3. The JSON-LD printed in the page head.
+2. An FAQ filled in the editor, with the FAQ variation in the block sidebar.
+3. The FAQPage printed in the page head, checked in the Schema.org validator: 0 errors, 0 warnings.
 
 == Changelog ==
 

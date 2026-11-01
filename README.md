@@ -1,5 +1,7 @@
 # Foldmark
 
+[![An accordion on the left, an arrow, and on the right the FAQPage JSON-LD it produces.](.wordpress-org/banner-1544x500.png)](.wordpress-org/banner-1544x500.png)
+
 Turns `core/accordion` blocks into an FAQ with schema.org `FAQPage` structured data. Pure PHP: no JavaScript, no build step, nothing written into saved content.
 
 [![CI](https://github.com/Fyrins/foldmark/actions/workflows/ci.yml/badge.svg)](https://github.com/Fyrins/foldmark/actions/workflows/ci.yml)
@@ -11,6 +13,20 @@ An FAQ built with the accordion block reads well for people, but machines only s
 - Plugin page: _submitted, awaiting review on wordpress.org_
 - Requires WordPress 6.9, PHP 7.4
 - Licensed GPL-2.0-or-later
+
+## What it looks like
+
+Insert the **FAQ** block from the inserter. It is the accordion block, preset with three questions.
+
+[![The block inserter filtered on FAQ, showing the FAQ block and its description.](.wordpress-org/screenshot-1.png)](.wordpress-org/screenshot-1.png)
+
+Write each question in a heading and its answer in the panel. The sidebar shows the block as an FAQ, and **Transform to variation** turns it back into a plain accordion.
+
+[![An FAQ block filled in the editor, with the FAQ card in the block sidebar.](.wordpress-org/screenshot-2.png)](.wordpress-org/screenshot-2.png)
+
+The page head gets one `FAQPage`, here checked in the Schema.org validator.
+
+[![The Schema.org validator showing one FAQPage with its questions, 0 errors and 0 warnings.](.wordpress-org/screenshot-3.png)](.wordpress-org/screenshot-3.png)
 
 ## About Google
 
