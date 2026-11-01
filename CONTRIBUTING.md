@@ -55,3 +55,19 @@ msgfmt --check -o languages/foldmark-fr_FR.mo languages/foldmark-fr_FR.po
 ```
 
 New languages are welcome on translate.wordpress.org once the plugin is listed.
+
+## Releasing
+
+1. Update the version in `foldmark.php` (header and `FOLDMARK_VERSION`), the
+   `Stable tag` of `readme.txt`, and add a `## [x.y.z]` section to
+   `CHANGELOG.md`.
+2. Merge to `main`, then tag that commit: `git tag vx.y.z && git push origin vx.y.z`.
+
+The deploy workflow runs the whole CI on the tag, refuses a commit that is not
+on `main`, checks that the four version numbers agree, then publishes to the
+wordpress.org SVN and creates the GitHub release.
+
+Two repository settings complete this and cannot live in the workflow files:
+an environment named `wordpress-org` holding `SVN_USERNAME` and `SVN_PASSWORD`,
+with a required reviewer, and a tag ruleset restricting who can create `v*`
+tags.

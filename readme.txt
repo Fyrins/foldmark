@@ -39,15 +39,16 @@ When a singular post or page is displayed, the plugin reads the blocks saved in 
 * No outbound network request, no tracking, no external asset.
 * Answers keep only the markup Google accepts in an answer: headings, paragraphs, lists, links, bold and italic.
 * Nothing is printed on archives, feeds, or password-protected posts.
-* If the page already contains a Yoast SEO or Rank Math FAQ block, Foldmark prints nothing, to avoid two `FAQPage` on the same page.
+* If the page already contains the FAQ block of Yoast SEO, Rank Math, SEOPress or All in One SEO, Foldmark prints nothing, to avoid two `FAQPage` on the same page.
 
 = For developers =
 
 * `foldmark_output_enabled` (bool): return false to stop printing the script.
-* `foldmark_get_graph()`: returns the nodes for the current view, available before `wp_head`. Combine both to move the FAQ into the graph of your SEO plugin.
-* `foldmark_graph` (array $nodes, WP_Post $post): change or empty the nodes.
-* `foldmark_answer_allowed_html` (array): the `wp_kses()` rules applied to answers.
-* `foldmark_conflicting_blocks` (string[]): blocks whose presence turns the output off.
+* `foldmark_get_graph()`: returns the nodes for the current view, available before `wp_head`. Combine both to move the FAQ into the graph of your SEO plugin. The result is computed once per request: add your filters before the first call.
+* `foldmark_graph` (array $nodes, WP_Post $post): change or empty the nodes. Question names are plain text: escape them if you print them as HTML.
+* `foldmark_answer_allowed_html` (array $allowed, WP_Post $post): the `wp_kses()` rules applied to answers.
+* `foldmark_conflicting_blocks` (string[] $names, WP_Post $post, string $type): blocks whose presence turns the FAQ output off.
+* `foldmark_types` (Foldmark_Type[] $types): schema types keyed by the value of the block attribute. Add your own class implementing `Foldmark_Type` to publish another type from accordions.
 
 Development happens at https://github.com/Fyrins/foldmark .
 
@@ -71,9 +72,9 @@ No. The accordion block has the structure of an FAQ: a container, one heading pe
 
 Your FAQ blocks stay valid accordions and keep working. Only the JSON-LD script disappears.
 
-= Does it conflict with Yoast SEO or Rank Math? =
+= Does it conflict with my SEO plugin? =
 
-Their own FAQ blocks print an `FAQPage`. When one of them is on the page, Foldmark prints nothing. Their general page graph is not affected.
+The FAQ blocks of Yoast SEO, Rank Math, SEOPress and All in One SEO print their own `FAQPage`. When one of them is on the page, Foldmark prints nothing. Their general page graph is not affected. Other blocks can be added with the `foldmark_conflicting_blocks` filter.
 
 = Does it send anything anywhere? =
 

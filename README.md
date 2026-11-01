@@ -56,7 +56,7 @@ The `foldmark` attribute and both variations are declared on the server, with th
 | `foldmark/faq` | inserter, transform | `{"foldmark":{"type":"faq"}}` |
 | `foldmark/accordion` | transform | `{"foldmark":null}` |
 
-The attribute is an object so that other schema types can be added later with another variation and another `type` value.
+The attribute is an object so that other schema types can be added with another variation, another `type` value and a class registered with the `foldmark_types` filter, without touching the walker or the graph.
 
 ## Nothing is written into your content
 
@@ -64,22 +64,35 @@ The attribute has no `source`: it lives in the block comment, which block valida
 
 ## How the graph is built
 
-1. On a singular view, the post content is parsed with `parse_blocks()`, before `wp_head`. Nothing is rendered twice.
-2. Synced patterns are followed, with a guard against patterns that include themselves. Unpublished and password-protected patterns are skipped, as core does when rendering.
-3. The question is the plain text of the heading title, without the toggle icon. The answer is the saved HTML of the panel blocks, filtered with `wp_kses()` down to the tags Google accepts in `Answer.text`.
+1. On a singular view, the post content is checked for an accordion or a synced pattern. Without either, nothing is parsed. Otherwise it is parsed with `parse_blocks()`, before `wp_head`, and nothing is rendered twice.
+2. `Foldmark_Block_Walker` walks the tree the way core renders it: blocks hidden with the visibility control are skipped, synced patterns are followed only when published and not password protected, cycles are stopped, and expansions are capped at 100 per post with each pattern parsed once.
+3. Accordions are grouped by the `type` of their `foldmark` attribute and handed to the matching `Foldmark_Type`. The FAQ type reads the plain text of each heading title, without the toggle icon, and the saved HTML of each panel, filtered with `wp_kses()` down to the tags Google accepts in `Answer.text`.
 4. Empty questions and answers are dropped, duplicate questions are published once, and all FAQ blocks of the page are merged into one `FAQPage`.
 5. The script is printed with `wp_print_inline_script_tag()`, encoded with `JSON_HEX_TAG` so no answer can close the script element.
 
-Nothing is printed on archives, feeds, REST responses, password-protected posts, or pages that already contain a Yoast SEO or Rank Math FAQ block.
+Nothing is printed on archives, feeds, REST responses, password-protected posts, or pages that already contain the FAQ block of Yoast SEO, Rank Math, SEOPress or All in One SEO.
+
+```
+includes/
+  class-foldmark-schema.php        names shared by everything below
+  class-foldmark-editor.php        attribute and variations
+  class-foldmark-block-walker.php  core rendering rules, once
+  interface-foldmark-type.php      contract of a schema type
+  class-foldmark-type-faq.php      the FAQ type
+  class-foldmark-graph.php         dispatch from attribute type to schema type
+  class-foldmark-plugin.php        per-request cache and output
+  functions.php                    public API
+```
 
 ## Filters and functions
 
 ```php
 // Hand the FAQ to another plugin's graph instead of printing it.
+// Computed once per request: add your filters before the first call.
 add_filter( 'foldmark_output_enabled', '__return_false' );
 $nodes = foldmark_get_graph(); // Available before wp_head.
 
-// Change or empty the nodes.
+// Change or empty the nodes. Question names are plain text: escape them as HTML.
 add_filter(
 	'foldmark_graph',
 	function ( array $nodes, WP_Post $post ) {
@@ -92,18 +105,31 @@ add_filter(
 // Keep more markup in answers (wp_kses() format).
 add_filter(
 	'foldmark_answer_allowed_html',
-	function ( array $allowed ) {
+	function ( array $allowed, WP_Post $post ) {
 		$allowed['code'] = array();
 		return $allowed;
-	}
+	},
+	10,
+	2
 );
 
-// Turn the output off when another FAQ block is on the page.
+// Turn the FAQ output off when another FAQ block is on the page.
 add_filter(
 	'foldmark_conflicting_blocks',
-	function ( array $names ) {
+	function ( array $names, WP_Post $post, string $type ) {
 		$names[] = 'acme/faq';
 		return $names;
+	},
+	10,
+	3
+);
+
+// Publish another schema type from accordions marked {"foldmark":{"type":"acme"}}.
+add_filter(
+	'foldmark_types',
+	function ( array $types ) {
+		$types['acme'] = new My_Acme_Type(); // Implements Foldmark_Type.
+		return $types;
 	}
 );
 ```
