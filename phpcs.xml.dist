@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<ruleset name="Foldmark">
+	<description>Coding standards for the Foldmark plugin.</description>
+
+	<file>.</file>
+
+	<exclude-pattern>/vendor/*</exclude-pattern>
+	<exclude-pattern>/node_modules/*</exclude-pattern>
+	<exclude-pattern>/build/*</exclude-pattern>
+
+	<arg name="basepath" value="."/>
+	<arg name="extensions" value="php"/>
+	<arg name="colors"/>
+	<arg name="parallel" value="8"/>
+	<arg value="sp"/>
+
+	<!--
+		Minimum supported versions.
+
+		PHP 7.4 is the floor WordPress core itself declares.
+
+		WordPress 6.9 is not a preference: core/accordion, the only block this
+		plugin works with, arrived in that release.
+	-->
+	<config name="testVersion" value="7.4-"/>
+	<config name="minimum_wp_version" value="6.9"/>
+
+	<rule ref="PHPCompatibilityWP"/>
+
+	<rule ref="WordPress">
+		<exclude name="Generic.Commenting.DocComment.MissingShort"/>
+	</rule>
+
+	<!-- Every global symbol must carry the plugin prefix. -->
+	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+		<properties>
+			<property name="prefixes" type="array">
+				<element value="foldmark"/>
+				<element value="FOLDMARK"/>
+				<element value="Foldmark"/>
+			</property>
+		</properties>
+	</rule>
+
+	<!-- Every translated string must use the plugin text domain. -->
+	<rule ref="WordPress.WP.I18n">
+		<properties>
+			<property name="text_domain" type="array">
+				<element value="foldmark"/>
+			</property>
+		</properties>
+	</rule>
+
+	<rule ref="WordPress.Files.FileName">
+		<properties>
+			<property name="strict_class_file_names" value="true"/>
+		</properties>
+	</rule>
+
+	<!-- Test files follow the wp-phpunit naming convention (test-*.php), and test
+	     names document themselves: no docblock is required on test classes or methods. -->
+	<rule ref="WordPress.Files.FileName.InvalidClassFileName">
+		<exclude-pattern>/tests/*</exclude-pattern>
+	</rule>
+	<rule ref="Squiz.Commenting.FunctionComment.Missing">
+		<exclude-pattern>/tests/*</exclude-pattern>
+	</rule>
+	<rule ref="Squiz.Commenting.ClassComment.Missing">
+		<exclude-pattern>/tests/*</exclude-pattern>
+	</rule>
+</ruleset>

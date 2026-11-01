@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Foldmark visuals</title>
+<!--
+	Source of the banner and the icon. Rendered at 1544x500 and 256x256 with a
+	headless browser, captured on the element, then reduced with `sips -z` for
+	772x250 and 128x128.
+-->
+<style>
+	:root {
+		--blue: #3858e9;
+		--blue-soft: #c5cff8;
+		--ink: #1e1e1e;
+		--muted: #50575e;
+		--line: #dcdcde;
+		--bar: #e0e0e0;
+	}
+	* { box-sizing: border-box; margin: 0; }
+	body { background: #f0f0f1; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; padding: 40px; display: grid; gap: 40px; justify-items: start; }
+
+	/* Banner: 1544x500, every measure doubled from the 772x250 layout. */
+	#banner {
+		width: 1544px; height: 500px; background: #fff;
+		display: flex; align-items: center; justify-content: space-between;
+		padding: 0 120px; overflow: hidden;
+	}
+	.copy { white-space: nowrap; flex-shrink: 0; }
+	.copy h1 { font-size: 92px; line-height: 1; font-weight: 800; letter-spacing: -2px; color: var(--ink); }
+	.copy p { margin-top: 26px; font-size: 34px; color: var(--muted); }
+	.copy .tag { margin-top: 36px; font-size: 21px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--blue); }
+
+	.art { display: flex; align-items: center; gap: 32px; }
+
+	.accordion { width: 260px; border: 2px solid var(--line); border-radius: 12px; overflow: hidden; }
+	.row { display: flex; align-items: center; justify-content: space-between; padding: 22px 24px; border-top: 2px solid var(--line); }
+	.row:first-child { border-top: 0; }
+	.row .q { height: 12px; border-radius: 6px; background: var(--blue); }
+	.row .plus { position: relative; width: 18px; height: 18px; }
+	.row .plus::before, .row .plus::after { content: ""; position: absolute; background: var(--muted); border-radius: 2px; }
+	.row .plus::before { left: 0; top: 8px; width: 18px; height: 2px; }
+	.row .plus::after { left: 8px; top: 0; width: 2px; height: 18px; }
+	.row.open .plus::after { display: none; }
+	.answer { padding: 0 24px 22px; display: grid; gap: 12px; }
+	.answer span { height: 10px; border-radius: 5px; background: var(--bar); }
+
+	.arrow { width: 56px; height: 24px; position: relative; }
+	.arrow::before { content: ""; position: absolute; left: 0; right: 6px; top: 11px; height: 3px; background: var(--muted); border-radius: 2px; }
+	.arrow::after { content: ""; position: absolute; right: 2px; top: 3px; width: 16px; height: 16px; border-top: 3px solid var(--muted); border-right: 3px solid var(--muted); transform: rotate(45deg); }
+
+	.code {
+		width: 304px; padding: 24px 26px; border-radius: 12px; background: #f6f7f7;
+		font: 600 17px/1.75 ui-monospace, "SF Mono", Menlo, Consolas, monospace; color: var(--muted); white-space: pre;
+	}
+	.code .k { color: var(--ink); }
+	.code .v { color: var(--blue); }
+
+	/* Icon: 256x256. */
+	#icon {
+		width: 256px; height: 256px; background: var(--blue);
+		display: grid; align-content: center; gap: 18px; padding: 0 40px;
+	}
+	.irow { display: flex; align-items: center; justify-content: space-between; }
+	.irow .q { height: 16px; border-radius: 8px; background: #fff; }
+	.irow .p { position: relative; width: 20px; height: 20px; }
+	.irow .p::before, .irow .p::after { content: ""; position: absolute; background: var(--blue-soft); border-radius: 2px; }
+	.irow .p::before { left: 0; top: 8px; width: 20px; height: 4px; }
+	.irow .p::after { left: 8px; top: 0; width: 4px; height: 20px; }
+	.irow.open .p::after { display: none; }
+	.ians { display: grid; gap: 10px; margin: -4px 0 4px; }
+	.ians span { height: 10px; border-radius: 5px; background: var(--blue-soft); opacity: .75; }
+</style>
+</head>
+<body>
+
+<div id="banner">
+	<div class="copy">
+		<h1>Foldmark</h1>
+		<p>FAQ structured data for accordions</p>
+		<div class="tag">schema.org FAQPage · No JavaScript</div>
+	</div>
+	<div class="art">
+		<div class="accordion">
+			<div class="row open"><span class="q" style="width:150px"></span><span class="plus"></span></div>
+			<div class="answer"><span style="width:200px"></span><span style="width:160px"></span></div>
+			<div class="row"><span class="q" style="width:120px"></span><span class="plus"></span></div>
+			<div class="row"><span class="q" style="width:160px"></span><span class="plus"></span></div>
+		</div>
+		<div class="arrow"></div>
+		<div class="code">{
+  <span class="k">"@type"</span>: <span class="v">"FAQPage"</span>,
+  <span class="k">"mainEntity"</span>: [{
+    <span class="k">"@type"</span>: <span class="v">"Question"</span>,
+    <span class="k">"acceptedAnswer"</span>: {…}
+  }]
+}</div>
+	</div>
+</div>
+
+<div id="icon">
+	<div class="irow open"><span class="q" style="width:110px"></span><span class="p"></span></div>
+	<div class="ians"><span style="width:176px"></span><span style="width:130px"></span></div>
+	<div class="irow"><span class="q" style="width:90px"></span><span class="p"></span></div>
+	<div class="irow"><span class="q" style="width:124px"></span><span class="p"></span></div>
+</div>
+
+</body>
+</html>

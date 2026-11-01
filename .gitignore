@@ -1,0 +1,5 @@
+.playwright-mcp/
+/vendor/
+/build/
+.phpunit.result.cache
+.phpcs-cache
