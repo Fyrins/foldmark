@@ -32,6 +32,14 @@ enrichis FAQ que pour des sites gouvernementaux et de santé qui font autorité.
 plugin produit un balisage valide et éligible ; il ne promet aucun affichage. Le
 readme le dit en ces termes (guideline 9 : aucune revendication de résultat).
 
+**Mise à jour du 2026-11-01, constatée pendant l'implémentation :** Google a retiré
+les résultats enrichis FAQ pour tous les sites le 7 mai 2026, puis leur prise en
+charge dans le Rich Results Test et la Search Console en juin 2026
+(https://developers.google.com/search/updates). L'objectif 2 n'existe donc plus.
+`FAQPage` reste un type schema.org valide que Google dit continuer à lire pour
+comprendre les pages, et que les moteurs d'IA exploitent : l'objectif 1 tient. Le
+readme et le README le disent explicitement.
+
 ## Pourquoi `core/accordion` et pas `core/details`
 
 Vérifié sur le trunk de Gutenberg le 2026-11-01.
