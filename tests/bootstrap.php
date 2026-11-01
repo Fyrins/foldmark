@@ -25,3 +25,5 @@ tests_add_filter(
 );
 
 require $foldmark_tests_dir . '/includes/bootstrap.php';
+
+require __DIR__ . '/class-foldmark-fixtures.php';
