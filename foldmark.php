@@ -33,3 +33,7 @@ defined( 'ABSPATH' ) || exit;
 
 define( 'FOLDMARK_VERSION', '1.0.0' );
 define( 'FOLDMARK_FILE', __FILE__ );
+
+require_once __DIR__ . '/includes/class-foldmark-editor.php';
+
+Foldmark_Editor::init();
