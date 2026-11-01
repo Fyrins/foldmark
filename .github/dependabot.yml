@@ -1,0 +1,8 @@
+# Workflow actions are pinned to commit SHAs. Dependabot proposes the updates,
+# so a new SHA is read in a pull request before it runs with any secret.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly

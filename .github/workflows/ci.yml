@@ -5,6 +5,8 @@ on:
     branches:
       - main
   pull_request:
+  # Called by deploy.yml, so a release runs the same checks first.
+  workflow_call:
 
 permissions:
   contents: read
@@ -27,17 +29,19 @@ jobs:
 
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
 
       - name: Set up PHP
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # v2
         with:
           php-version: ${{ matrix.php }}
           coverage: none
           tools: composer
 
       - name: Install dependencies
-        uses: ramsey/composer-install@v3
+        uses: ramsey/composer-install@a8d0d959dab41457692a5e2041bd9b757a119e3f # v3
 
       - name: Lint PHP files
         run: |
@@ -78,10 +82,12 @@ jobs:
 
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
 
       - name: Set up PHP
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # v2
         with:
           php-version: ${{ matrix.php }}
           coverage: none
@@ -89,7 +95,7 @@ jobs:
           extensions: mysqli
 
       - name: Install dependencies
-        uses: ramsey/composer-install@v3
+        uses: ramsey/composer-install@a8d0d959dab41457692a5e2041bd9b757a119e3f # v3
 
       # The test suite loads WordPress from WP_CORE_DIR. The latest release is
       # what the plugin declares it is tested up to.
@@ -105,7 +111,9 @@ jobs:
 
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
 
       # Plugin Check must run on what is actually published, not on the source
       # tree. Development files that .distignore removes from the package would
@@ -121,7 +129,7 @@ jobs:
           find build/foldmark -type f | sort
 
       - name: Run the official Plugin Check
-        uses: wordpress/plugin-check-action@v1
+        uses: wordpress/plugin-check-action@10857da14b6c2246d15402b3e69f777edcf8c12e # v1
         with:
           build-dir: './build/foldmark'
           categories: |
