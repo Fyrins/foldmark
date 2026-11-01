@@ -258,8 +258,9 @@ class Foldmark_Faq_Extractor {
 			return 0;
 		}
 
+		// Same conditions as render_block_core_block(): never read what core would not display.
 		$post = get_post( $id );
-		if ( ! $post || 'wp_block' !== $post->post_type || 'publish' !== $post->post_status ) {
+		if ( ! $post || 'wp_block' !== $post->post_type || 'publish' !== $post->post_status || ! empty( $post->post_password ) ) {
 			return 0;
 		}
 

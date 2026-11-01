@@ -102,6 +102,17 @@ class Foldmark_Test_Faq_Extractor extends WP_UnitTestCase {
 		$this->assertSame( array(), $this->pairs( Foldmark_Fixtures::synced( $draft ) ) );
 	}
 
+	public function test_password_protected_synced_pattern_is_not_read() {
+		$id = $this->pattern( Foldmark_Fixtures::delivery_faq() );
+		wp_update_post(
+			array(
+				'ID'            => $id,
+				'post_password' => 'secret',
+			)
+		);
+		$this->assertSame( array(), $this->pairs( Foldmark_Fixtures::synced( $id ) ) );
+	}
+
 	public function test_synced_pattern_inside_an_answer_is_resolved() {
 		$id     = $this->pattern( Foldmark_Fixtures::paragraph( 'Texte partagé.' ) );
 		$markup = Foldmark_Fixtures::accordion( Foldmark_Fixtures::item( 'Q', Foldmark_Fixtures::synced( $id ) ) );
