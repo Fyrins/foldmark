@@ -36,5 +36,6 @@ define( 'FOLDMARK_FILE', __FILE__ );
 
 require_once __DIR__ . '/includes/class-foldmark-editor.php';
 require_once __DIR__ . '/includes/class-foldmark-faq-extractor.php';
+require_once __DIR__ . '/includes/class-foldmark-graph.php';
 
 Foldmark_Editor::init();
