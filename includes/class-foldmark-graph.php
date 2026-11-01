@@ -85,7 +85,9 @@ class Foldmark_Graph {
 				continue;
 			}
 
-			$key = mb_strtolower( trim( preg_replace( '/\s+/u', ' ', $name ) ) );
+			// WordPress does not require mbstring, and core has no polyfill for mb_strtolower().
+			$key = trim( preg_replace( '/\s+/u', ' ', $name ) );
+			$key = function_exists( 'mb_strtolower' ) ? mb_strtolower( $key, 'UTF-8' ) : strtolower( $key );
 			if ( isset( $seen[ $key ] ) ) {
 				continue;
 			}

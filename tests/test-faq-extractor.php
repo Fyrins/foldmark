@@ -131,6 +131,38 @@ class Foldmark_Test_Faq_Extractor extends WP_UnitTestCase {
 		$this->assertCount( 1, $this->pairs( Foldmark_Fixtures::synced( $a ) ) );
 	}
 
+	public function test_hidden_accordion_is_ignored() {
+		$item = Foldmark_Fixtures::item( 'Q', Foldmark_Fixtures::paragraph( 'A' ) );
+		$this->assertSame( array(), $this->pairs( Foldmark_Fixtures::accordion( $item, '{"foldmark":{"type":"faq"},"metadata":{"blockVisibility":false}}' ) ) );
+	}
+
+	public function test_faq_inside_hidden_group_is_ignored() {
+		$markup = str_replace( '{"layout":{"type":"constrained"}}', '{"layout":{"type":"constrained"},"metadata":{"blockVisibility":false}}', Foldmark_Fixtures::group( Foldmark_Fixtures::delivery_faq() ) );
+		$this->assertSame( array(), $this->pairs( $markup ) );
+	}
+
+	public function test_hidden_item_is_ignored() {
+		$hidden = str_replace( '<!-- wp:accordion-item -->', '<!-- wp:accordion-item {"metadata":{"blockVisibility":false}} -->', Foldmark_Fixtures::item( 'Masquée', Foldmark_Fixtures::paragraph( 'A' ) ) );
+		$markup = Foldmark_Fixtures::accordion( $hidden . Foldmark_Fixtures::item( 'Visible', Foldmark_Fixtures::paragraph( 'B' ) ) );
+		$this->assertSame( array( 'Visible' ), wp_list_pluck( $this->pairs( $markup ), 'question' ) );
+	}
+
+	public function test_hidden_answer_block_is_left_out() {
+		$hidden = str_replace( '<!-- wp:paragraph -->', '<!-- wp:paragraph {"metadata":{"blockVisibility":false}} -->', Foldmark_Fixtures::paragraph( 'Texte masqué' ) );
+		$pairs  = $this->pairs( Foldmark_Fixtures::accordion( Foldmark_Fixtures::item( 'Q', Foldmark_Fixtures::paragraph( 'Texte visible' ) . $hidden ) ) );
+		$this->assertSame( '<p>Texte visible</p>', $pairs[0]['answer'] );
+	}
+
+	public function test_hidden_synced_pattern_reference_is_ignored() {
+		$id = $this->pattern( Foldmark_Fixtures::delivery_faq() );
+		$this->assertSame( array(), $this->pairs( '<!-- wp:block {"ref":' . $id . ',"metadata":{"blockVisibility":false}} /-->' ) );
+	}
+
+	public function test_contains_block_ignores_hidden_blocks() {
+		$yoast = '<!-- wp:yoast/faq-block {"questions":[],"metadata":{"blockVisibility":false}} -->' . "\n" . '<div class="schema-faq wp-block-yoast-faq-block"></div>' . "\n" . '<!-- /wp:yoast/faq-block -->';
+		$this->assertFalse( Foldmark_Faq_Extractor::contains_block( parse_blocks( $yoast ), array( 'yoast/faq-block' ) ) );
+	}
+
 	public function test_contains_block_finds_nested_and_synced_blocks() {
 		$yoast = '<!-- wp:yoast/faq-block {"questions":[]} -->' . "\n" . '<div class="schema-faq wp-block-yoast-faq-block"></div>' . "\n" . '<!-- /wp:yoast/faq-block -->';
 		$names = array( 'yoast/faq-block' );

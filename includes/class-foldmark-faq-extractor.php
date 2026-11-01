@@ -54,7 +54,7 @@ class Foldmark_Faq_Extractor {
 	 */
 	private static function collect( $blocks, &$pairs, &$stack ) {
 		foreach ( (array) $blocks as $block ) {
-			if ( ! is_array( $block ) || empty( $block['blockName'] ) ) {
+			if ( ! is_array( $block ) || empty( $block['blockName'] ) || self::is_hidden( $block ) ) {
 				continue;
 			}
 
@@ -91,7 +91,7 @@ class Foldmark_Faq_Extractor {
 	 */
 	private static function find( $blocks, $names, &$stack ) {
 		foreach ( (array) $blocks as $block ) {
-			if ( ! is_array( $block ) || empty( $block['blockName'] ) ) {
+			if ( ! is_array( $block ) || empty( $block['blockName'] ) || self::is_hidden( $block ) ) {
 				continue;
 			}
 
@@ -133,6 +133,20 @@ class Foldmark_Faq_Extractor {
 			&& isset( $value['type'] )
 			&& is_string( $value['type'] )
 			&& Foldmark_Editor::TYPE_FAQ === $value['type'];
+	}
+
+	/**
+	 * Tells whether a block is hidden with the block visibility control.
+	 *
+	 * Same test as wp_render_block_visibility_support() (WordPress 6.9): core
+	 * renders nothing for such a block, so it must not reach the structured data.
+	 * Hiding on some viewports only leaves the content in the page and is ignored.
+	 *
+	 * @param array $block Block.
+	 * @return bool
+	 */
+	private static function is_hidden( $block ) {
+		return isset( $block['attrs']['metadata']['blockVisibility'] ) && false === $block['attrs']['metadata']['blockVisibility'];
 	}
 
 	/**
@@ -207,7 +221,7 @@ class Foldmark_Faq_Extractor {
 	 * @return string
 	 */
 	private static function static_html( $block, &$stack ) {
-		if ( ! is_array( $block ) ) {
+		if ( ! is_array( $block ) || self::is_hidden( $block ) ) {
 			return '';
 		}
 
@@ -279,7 +293,7 @@ class Foldmark_Faq_Extractor {
 	}
 
 	/**
-	 * Returns the inner blocks of a block, keeping only well-formed ones.
+	 * Returns the inner blocks of a block, keeping only well-formed, visible ones.
 	 *
 	 * @param array $block Block.
 	 * @return array
@@ -293,7 +307,7 @@ class Foldmark_Faq_Extractor {
 			array_filter(
 				$block['innerBlocks'],
 				static function ( $child ) {
-					return is_array( $child ) && ! empty( $child['blockName'] );
+					return is_array( $child ) && ! empty( $child['blockName'] ) && ! self::is_hidden( $child );
 				}
 			)
 		);
