@@ -15,6 +15,9 @@
 
 An FAQ built with the accordion block reads well for people, but machines only see headings and paragraphs. Foldmark adds an **FAQ** block to the editor (the accordion block, preset as a list of questions) and prints its questions and answers as one JSON-LD `FAQPage` in the page head.
 
+- Requires WordPress 6.9, PHP 7.4
+- Licensed GPL-2.0-or-later
+
 ## What it looks like
 
 Insert the **FAQ** block from the inserter. It is the accordion block, preset with three questions.
