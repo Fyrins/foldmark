@@ -1,16 +1,20 @@
-# Foldmark
+<p align="center">
+  <img src=".wordpress-org/banner-1544x500.png" alt="An accordion on the left, an arrow, and on the right the FAQPage JSON-LD it produces.">
+</p>
 
-[![An accordion on the left, an arrow, and on the right the FAQPage JSON-LD it produces.](.wordpress-org/banner-1544x500.png)](.wordpress-org/banner-1544x500.png)
+<h1 align="center">Foldmark</h1>
 
-Turns `core/accordion` blocks into an FAQ with schema.org `FAQPage` structured data. Pure PHP: no JavaScript, no build step, nothing written into saved content.
+<p align="center">Turn an accordion block into an FAQ with schema.org FAQPage structured data. Pure PHP, no JavaScript, nothing stored in your content.</p>
 
-[![CI](https://github.com/Fyrins/foldmark/actions/workflows/ci.yml/badge.svg)](https://github.com/Fyrins/foldmark/actions/workflows/ci.yml)
-[![License: GPL v2](https://img.shields.io/badge/license-GPL--2.0--or--later-blue.svg)](LICENSE)
-[![Sponsor](https://img.shields.io/badge/sponsor-GitHub%20Sponsors-ea4aaa.svg)](https://github.com/sponsors/Fyrins)
+<p align="center">
+  <a href="https://github.com/Fyrins/foldmark/actions/workflows/ci.yml"><img src="https://github.com/Fyrins/foldmark/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--2.0--or--later-green" alt="License: GPL-2.0-or-later"></a>
+  <a href="https://github.com/Fyrins/foldmark/issues"><img src="https://img.shields.io/github/issues/Fyrins/foldmark" alt="Open issues"></a>
+  <a href="https://github.com/sponsors/Fyrins"><img src="https://img.shields.io/badge/sponsor-GitHub%20Sponsors-ea4aaa" alt="Sponsor"></a>
+</p>
 
 An FAQ built with the accordion block reads well for people, but machines only see headings and paragraphs. Foldmark adds an **FAQ** block to the editor (the accordion block, preset as a list of questions) and prints its questions and answers as one JSON-LD `FAQPage` in the page head.
 
-- Plugin page: _submitted, awaiting review on wordpress.org_
 - Requires WordPress 6.9, PHP 7.4
 - Licensed GPL-2.0-or-later
 
