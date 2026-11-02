@@ -20,6 +20,10 @@ An FAQ built with the accordion block reads well for people, but machines only s
 
 ## What it looks like
 
+![The FAQ block is inserted with /faq, a question and its answer are typed and the page is saved. The FAQPage JSON-LD of the published page then shows that question and answer.](.github/media/demo.gif)
+
+<em>From the FAQ block to the FAQPage published in the page head.</em>
+
 Insert the **FAQ** block from the inserter. It is the accordion block, preset with three questions.
 
 [![The block inserter filtered on FAQ, showing the FAQ block and its description.](.wordpress-org/screenshot-1.png)](.wordpress-org/screenshot-1.png)
