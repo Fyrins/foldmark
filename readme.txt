@@ -13,6 +13,8 @@ Turn an accordion block into an FAQ with schema.org FAQPage structured data. Pur
 
 == Description ==
 
+https://www.youtube.com/watch?v=v8VdRWl6QOU
+
 An FAQ written with the accordion block reads well for people, but machines only see a list of headings and paragraphs. Foldmark adds an **FAQ** block to the editor. It is the accordion block you already know, preset as a list of questions, and the plugin publishes its questions and answers as schema.org `FAQPage` data in the page head.
 
 Search engines and AI assistants that read structured data then get every question and its answer as an explicit pair, instead of guessing them from the layout.
