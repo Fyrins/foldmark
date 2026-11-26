@@ -3,7 +3,7 @@ Contributors: fyrins
 Donate link: https://github.com/sponsors/Fyrins
 Tags: faq, schema, structured data, accordion, json-ld
 Requires at least: 6.9
-Tested up to: 7.1
+Tested up to: 7.2
 Requires PHP: 7.4
 Stable tag: 1.0.0
 License: GPL-2.0-or-later
